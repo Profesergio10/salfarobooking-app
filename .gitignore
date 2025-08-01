@@ -1,0 +1,14 @@
+
+# Directorios de Node.js
+node_modules/
+
+# Archivos de entorno local
+.env
+.env.*
+
+# Archivos generados por Google OAuth
+token.json
+
+# Otros archivos ignorados comúnmente
+*.log
+.DS_Store
