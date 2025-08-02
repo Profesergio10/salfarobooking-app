@@ -134,6 +134,16 @@ dist
 !.yarn/sdks
 !.yarn/versions
 
+node_modules/
+.env
+Dockerfile
+.env.local
+
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+node_modules/
+.env
+Dockerfile
+.env.local
