@@ -1,0 +1,739 @@
+/* General styles */
+:root {
+    --primary-bg: #fbfcfd;      /* Fondo principal: Azul muy claro, casi blanco */
+    --secondary-bg: #f2f5f7;    /* Fondo secundario: Blanco puro */
+    --accent-color: #b0e0e6;    /* Color de acento: Celeste claro y suave */
+    --accent-color-dark: #58bde2; /* Tono más saturado para el hover */
+    --text-color: #515150;      /* Texto principal: Gris oscuro azulado */
+    --secondary-text-color: #75808a; /* Texto secundario: Gris medio */
+    --border-color: #e6eef5;    /* Color de borde */
+    --shadow-color: rgba(0, 0, 0, 0.05);
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Typography */
+h1, h2, h3 {
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text-color);
+    text-transform: uppercase;
+}
+
+h1 {
+    font-size: 3.5rem;
+    color: var(--accent-color-dark);
+}
+
+h2 {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+    color: var(--accent-color-dark);
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: 2px solid var(--primary-bg);
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+    box-shadow: 0 4px 10px var(--shadow-color);
+}
+
+.btn:hover {
+    background-color: var(--accent-color-dark);
+    border-color: var(--accent-color-dark);
+    color: var(--white);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px var(--shadow-color);
+}
+
+/* Header */
+.header {
+    background-color: var(--primary-bg);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 1rem 0;
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--accent-color-dark);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.logo-img {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+
+/* Añado posición relativa para el pseudo-elemento */
+.nav-links a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 400;
+    transition: color 0.3s ease;
+    padding: 0.5rem 0;
+    position: relative; /* Clave para el efecto de la línea */
+}
+
+/* Pseudo-elemento para crear la línea */
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: -5px; /* Ajusta la distancia de la línea respecto al texto */
+    left: 0;
+    background-color: var(--accent-color-dark);
+    transform: scaleX(0); /* La línea está oculta inicialmente */
+    transform-origin: bottom right; /* La animación empieza de derecha a izquierda */
+    transition: transform 0.3s ease-out;
+}
+
+/* El efecto al pasar el ratón */
+.nav-links a:hover {
+    color: var(--text-color);
+}
+
+/* Animación de la línea al pasar el ratón */
+.nav-links a:hover::after {
+    transform: scaleX(1); /* La línea se muestra de derecha a izquierda */
+    transform-origin: bottom left;
+}
+
+/* Hero Section */
+.hero {
+    background-image: url('img/fondo\ 7.jpg'); /* Aquí se agrega la imagen */
+    background-size: cover; /* La imagen cubrirá todo el espacio, recortando si es necesario */
+    background-color: var(--primary-bg);
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+    background-position: center center; /* Centra la imagen */
+    padding: 10rem 0;
+    text-align: center;
+    position: relative; /* Necesario para el overlay */
+    z-index: 1; /* Asegura que el contenido esté por encima del overlay */
+}
+
+/* Opcional: Overlay oscuro para mejorar la legibilidad del texto */
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Un 50% de opacidad negra */
+    z-index: -1; /* Detrás del contenido, pero encima de la imagen */
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    color: var(--secondary-bg); /* Asegura que el título sea blanco o muy claro */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Sombra para el texto para mejor legibilidad */
+}
+
+.hero p {
+    font-size: 1.25rem;
+    margin-bottom: 3rem;
+    color: var(--secondary-bg);
+}
+
+
+.hero .btn:hover {
+    background-color: var(--accent-color-dark); /* Un color más claro al pasar el ratón */
+    border-color: var(--border-color);
+}
+
+/* Services Section */
+.services {
+    padding: 6rem 0;
+    background-color: var(--secondary-bg);
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.service-card {
+    background-color: var(--primary-bg);
+    border-radius: 10px;
+    box-shadow: 0 4px 15px var(--shadow-color);
+    overflow: hidden;
+    text-align: left;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px var(--shadow-color);
+}
+
+.service-card img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    display: block;
+}
+
+.service-content {
+    padding: 2rem;
+}
+
+.service-content h3 {
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.service-content i {
+    color: var(--accent-color-dark);
+}
+
+.price-info {
+    border-top: 1px solid var(--border-color);
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--secondary-text-color);
+}
+
+/* About Me Section */
+.about-me {
+    padding: 4rem 0;
+    background-color: var(--accent-color-dark);
+}
+
+.about-content {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4rem;
+}
+
+.about-image {
+    flex: 1;
+    min-width: 300px;
+}
+
+.about-image img {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px var(--shadow-color);
+}
+
+.about-text {
+    flex: 2;
+    min-width: 300px;
+    color: var(--primary-bg);
+}
+
+.about-text h2 {
+    text-align: left;
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+}
+
+/* Testimonials Section */
+.testimonials {
+    padding: 4rem 0;
+    background-color: var(--accent-color-dark);
+}
+
+.testimonial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.testimonial-card {
+    background-color: var(--primary-bg);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px var(--shadow-color);
+    position: relative;
+}
+
+.testimonial-card p {
+    font-style: italic;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.testimonial-card span {
+    display: block;
+    font-weight: 600;
+    color: var(--accent-color-dark);
+    text-align: right;
+}
+
+/* Estilos para la sección de video de YouTube */
+.youtube-video {
+    
+    padding: 60px 0;
+    background-color: var(--secondary-bg); /* Un color de fondo suave */
+    text-align: center;
+}
+
+.youtube-video h2 {
+    margin-bottom: 40px;
+    color: #333;
+    font-size: 2.5em;
+}
+
+.video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%; /* Relación de aspecto 16:9 (altura / ancho = 9 / 16 = 0.5625) */
+    height: 0;
+    overflow: hidden;
+    max-width: 900px; /* Ancho máximo para el video */
+    margin: 0 auto; /* Centrar el contenedor del video */
+    border-radius: 8px; /* Bordes ligeramente redondeados */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+.video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+/* Ajustes para pantallas más pequeñas */
+@media (max-width: 768px) {
+    .youtube-video h2 {
+        font-size: 2em;
+    }
+}
+
+/* Footer */
+.footer {
+    background-color: var(--accent-color-dark);
+    color: var(--text-color);
+    text-align: center;
+    padding: 3rem 0;
+}
+
+.footer .container {
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.social-links {
+    margin-top: 1rem;
+   
+}
+
+.social-links a {
+    color: var(--text-color);
+    font-size: 1.5rem;
+    margin-left: 1rem;
+    transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+    color: var(--primary-bg);
+}
+
+/* --- */
+
+/* Estilos para el botón flotante de WhatsApp */
+.whatsapp-float {
+    position: fixed; /* Hace que el botón "flote" en la pantalla */
+    width: 60px; /* Ancho del botón */
+    height: 60px; /* Alto del botón */
+    bottom: 40px; /* Separación desde la parte inferior */
+    right: 40px; /* Separación desde la parte derecha */
+    background-color: #7ed1f0; /* Color verde oficial de WhatsApp */
+    color: #FFF; /* Color del ícono */
+    border-radius: 50px; /* Para hacerlo completamente redondo */
+    text-align: center;
+    font-size: 28px; /* Tamaño del ícono */
+    box-shadow: 2px 2px 3px rgba(0,0,0,0.3); /* Sombra suave */
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+    display: flex; /* Para centrar el ícono */
+    justify-content: center; /* Centrado horizontal */
+    align-items: center; /* Centrado vertical */
+    transition: transform 0.3s ease-in-out, background-color 0.3s ease; /* Transición para el efecto hover */
+}
+
+.whatsapp-float:hover {
+    transform: scale(1.1); /* Efecto de "crecer" al pasar el ratón */
+    background-color: #87ceeb; /* Un verde ligeramente más oscuro al pasar el ratón */
+}
+
+/* Media query para ajustar el tamaño y posición en móviles */
+@media (max-width: 768px) {
+    .whatsapp-float {
+        width: 50px; /* Un poco más pequeño en móviles */
+        height: 50px;
+        bottom: 20px; /* Menos separación en móviles */
+        right: 20px;
+        font-size: 24px; /* Ícono más pequeño */
+    }
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content-inner {
+    background-color: var(--secondary-bg);
+    margin: 5% auto;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 700px;
+    position: relative;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+}
+
+.close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #aaa;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+    color: var(--accent-color-dark);
+}
+
+/* Form */
+.form-step {
+    display: none;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.form-step.active {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    box-sizing: border-box;
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
+}
+
+.form-group input::placeholder {
+    color: #ccc;
+}
+
+.form-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+
+.radio-group {
+    display: flex;
+    gap: 1rem;
+}
+
+.class-type-card {
+    flex: 1;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.class-type-card:hover, .class-type-card.selected {
+    border-color: var(--accent-color-dark);
+}
+
+.class-type-card input[type="radio"] {
+    display: none;
+}
+
+.class-type-card i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--secondary-text-color);
+    transition: color 0.3s ease;
+}
+
+.class-type-card input[type="radio"]:checked + i {
+    color: var(--accent-color-dark);
+}
+
+.class-type-card input[type="radio"]:checked + span {
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+/* Calendar */
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.calendar-header button {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.3s ease;
+}
+
+.calendar-header button:hover {
+    color: var(--accent-color-dark);
+}
+
+.calendar-grid-header, .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    gap: 0.5rem;
+}
+
+.calendar-grid-header span {
+    font-weight: 600;
+    color: var(--accent-color-dark);
+}
+
+.day-cell {
+    padding: 0.75rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    background-color: var(--primary-bg);
+    border: 1px solid var(--border-color);
+}
+
+.day-cell:hover {
+    background-color: var(--border-color);
+}
+
+.day-cell.active {
+    background-color: var(--accent-color-dark);
+    color: var(--white);
+    font-weight: 600;
+}
+
+.day-cell.inactive {
+    color: #ccc;
+    cursor: not-allowed;
+    background-color: var(--primary-bg);
+    border-color: #e6eef5;
+}
+
+#timeSlots {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.time-slot {
+    padding: 0.75rem;
+    background-color: var(--primary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.time-slot:hover {
+    background-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.time-slot.active {
+    background-color: var(--accent-color-dark);
+    color: var(--white);
+}
+
+.booking-summary {
+    background-color: var(--primary-bg);
+    padding: 2rem;
+    border-radius: 10px;
+    line-height: 1.8;
+    border: 1px solid var(--border-color);
+}
+
+/* Elimina el underline del botón "Agendar" en el nav */
+.nav-links a.btn::after {
+    content: none;
+}
+
+/* Animación de fade-in */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ... Tus estilos existentes ... */
+
+/* Estilos para la caja de mensaje de confirmación */
+#customMessageBox {
+    display: none;
+    position: absolute; /* Cambiado de 'fixed' a 'absolute' */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 2000;
+    text-align: center;
+    max-width: 300px;
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-color);
+}
+
+.message-button {
+    background-color: var(--accent-color-dark);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+    font-family: 'Poppins', sans-serif;
+    transition: background-color 0.3s ease;
+}
+
+.message-button:hover {
+    background-color: var(--accent-color);
+}
+
+/* Estilos para el indicador de carga */
+#loadingIndicator {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1.2rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.spinner-container {
+    text-align: center;
+}
+
+.spinner {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* El contenedor del modal debe tener position: relative para que el mensaje se posicione correctamente */
+.booking-modal-content {
+    position: relative;
+}

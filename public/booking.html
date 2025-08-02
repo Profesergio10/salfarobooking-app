@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Reservas</title>
+</head>
+<body>
+  <h1>Reservar una clase</h1>
+  <form action="/book" method="POST">
+    <div>
+      <label for="name">Tu Nombre:</label>
+      <input type="text" id="name" name="name" required>
+    </div>
+    <div>
+      <label for="email">Tu Email:</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+    <div>
+      <label for="date">Fecha:</label>
+      <input type="date" id="date" name="date" required>
+    </div>
+    <div>
+      <label for="time">Hora:</label>
+      <input type="time" id="time" name="time" required>
+    </div>
+    <button type="submit">Confirmar Reserva</button>
+  </form>
+</body>
+</html>
