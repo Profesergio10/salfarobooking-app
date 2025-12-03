@@ -39,4 +39,5 @@ images:
 options:
   # Configuración de logs: envía los logs directamente a Cloud Logging.
   # Esto ayuda a evitar errores relacionados con buckets de logs.
-  logging: CLOUD_LOGGING_ONLY
+  # Configuración de logs compatible con cuentas de servicio específicas
+  default_logs_bucket_behavior: REGIONAL_USER_OWNED_BUCKET
