@@ -30,7 +30,6 @@
     </header>
 
     <section class="hero" id="home">
-
         <div class="container">
             <h1>Domina tu pasión musical con la guía de un experto.</h1>
             <p>Con más de 12 años de experiencia, Sergio Alfaro te acompaña en tu camino.</p>
@@ -49,7 +48,6 @@
                         <p>Aprende a tocar un instrumento con una metodología práctica a tu propio ritmo, donde
                             aprenderás
                             no solo a tocar tu propio instrumento, sino también a comprender la música desde sus bases.
-                        </p>
                         </p>
                         <div class="price-info">
                             <p><strong>Clase sincrónica:</strong> $30.000</p>
@@ -76,7 +74,6 @@
                         <p>Te ayudo a desarrollar tus ideas al más alto nivel, donde viajaremos por la grabación, mezcla
                             y mástering de tu proyecto musical, asegurando que suene profesional y esté listo para el
                             mundo.</p>
-                        </p>
                         <div class="price-info">
                             <p>El valor varía según las necesidades y se establecerá en la reunión agendada.</p>
                         </div>
@@ -144,10 +141,9 @@
         </div>
     </section>
 
-
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 Creado por Sergio Alfaro. Todos los derechos reservados.</p>
+            <p>© 2025 Creado por Sergio Alfaro. Todos los derechos reservados.</p>
             <div class="social-links">
                 <a href="https://wa.me/56963340228" class="whatsapp-float" target="_blank">
                     <i class="fab fa-whatsapp"></i>
@@ -158,12 +154,27 @@
         </div>
     </footer>
 
+
     <div id="bookingModal" class="modal">
         <div class="modal-content-inner">
-            <button class="close-btn">&times;</button>
-            <h3 id="modal-subtitle">Paso 1 de 5: Elige un servicio</h3>
+            <button class="close-btn">×</button>
+            <h3 id="modal-subtitle"></h3>
             <form id="bookingForm">
-                <div id="step-1" class="form-step active">
+                <div id="auth-section" class="form-step active" style="display: block;">
+                    <h3>Inicia sesión para ver horarios</h3>
+                    <p>Para agendar una cita, por favor, inicia sesión con tu cuenta de Google.</p>
+                    <button type="button" id="google-signin-btn" class="btn google-btn">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Logo_de_Google.png" alt="Google Logo">
+                        Iniciar sesión con Google
+                    </button>
+                    <div id="user-info" style="display: none; margin-top: 15px;">
+                        <img id="user-photo" src="" alt="User Photo" style="border-radius: 50%; width: 50px;">
+                        <span id="user-name" style="margin-left: 10px;"></span>
+                        <button type="button" id="start-booking-btn" class="btn" style="margin-left: 15px;">Empezar a agendar</button>
+                    </div>
+                </div>
+
+                <div id="step-1" class="form-step" style="display: none;">
                     <div class="form-group">
                         <label for="service">Servicio:</label>
                         <select id="service" required>
@@ -178,7 +189,7 @@
                     </div>
                 </div>
 
-                <div id="step-2" class="form-step">
+                <div id="step-2" class="form-step" style="display: none;">
                     <div class="form-group">
                         <label>Tipo de clase:</label>
                         <div class="radio-group">
@@ -204,11 +215,11 @@
                     </div>
                 </div>
 
-                <div id="step-3" class="form-step">
+                <div id="step-3" class="form-step" style="display: none;">
                     <div class="calendar-header">
-                        <button type="button" id="prevMonth">&lt;</button>
+                        <button type="button" id="prevMonth"><</button>
                         <span id="currentMonth"></span>
-                        <button type="button" id="nextMonth">&gt;</button>
+                        <button type="button" id="nextMonth">></button>
                     </div>
                     <div class="calendar-grid-header">
                         <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
@@ -226,7 +237,7 @@
                     </div>
                 </div>
 
-                <div id="step-4" class="form-step">
+                <div id="step-4" class="form-step" style="display: none;">
                     <h2>Paso 4 de 5: Completa tus datos</h2>
                     <div class="form-group">
                         <label for="name">Nombre completo:</label>
@@ -246,7 +257,7 @@
                     </div>
                 </div>
 
-                <div id="step-5" class="form-step">
+                <div id="step-5" class="form-step" style="display: none;">
                     <h2>Paso 5 de 5: Revisa y confirma tu cita</h2>
                     <div id="resumen-container" class="booking-summary">
                     </div>
@@ -259,7 +270,15 @@
             </form>
         </div>
     </div>
-    <script src="script.js"></script>
+
+    <!-- Contenedor para el mensaje de carga -->
+    <div id="loading-overlay" class="loading-overlay" style="display: none;">
+        <div class="loader"></div>
+    </div>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+    <script type="module" src="script.js"></script>
+    
 </body>
 
 </html>

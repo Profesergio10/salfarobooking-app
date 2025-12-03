@@ -1,8 +1,9 @@
 {
-  "name": "website", 
+  "name": "website",
   "version": "1.0.0",
   "description": "Backend para la aplicación de Salfaro con Google Calendar y Drive",
-  "main": "server.js",   "scripts": {
+  "main": "server.js",
+  "scripts": {
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,8 +11,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.19.2",
+    "express": "^4.21.2",
+    "express-validator": "^7.2.1",
+    "firebase-admin": "^13.4.0",
     "google-auth-library": "^9.11.0",
     "googleapis": "^140.0.0"
   }

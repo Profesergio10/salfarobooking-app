@@ -1,0 +1,42 @@
+---
+# Este archivo define los pasos para construir y desplegar la aplicación
+# usando Google Cloud Build.
+# El nombre de la aplicación es 'booking-app'.
+
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    # Paso 1: Construye la imagen Docker de tu aplicación.
+    # Se etiqueta la imagen con el ID del proyecto de Google Cloud.
+    args: ["build", "-t", "gcr.io/$PROJECT_ID/booking-app", "."]
+
+  - name: "gcr.io/cloud-builders/docker"
+    # Paso 2: Sube la imagen construida a Google Container Registry (GCR).
+    # Esto hace que la imagen esté disponible para su despliegue.
+    args: ["push", "gcr.io/$PROJECT_ID/booking-app"]
+
+  - name: "gcr.io/cloud-builders/gcloud"
+    # Paso 3: Despliega la imagen en Cloud Run.
+    # El servicio se llamará 'booking-app'.
+    # La región 'us-central1' es donde se desplegará el servicio.
+    # '--allow-unauthenticated' permite el acceso público a la aplicación.
+    args: [
+      "run",
+      "deploy",
+      "booking-app",
+      "--image",
+      "gcr.io/$PROJECT_ID/booking-app",
+      "--region",
+      "us-central1",
+      "--platform",
+      "managed",
+      "--allow-unauthenticated"
+    ]
+
+images:
+  # Declara las imágenes que se producirán con esta compilación.
+  - "gcr.io/$PROJECT_ID/booking-app"
+
+options:
+  # Configuración de logs: envía los logs directamente a Cloud Logging.
+  # Esto ayuda a evitar errores relacionados con buckets de logs.
+  logging: CLOUD_LOGGING_ONLY

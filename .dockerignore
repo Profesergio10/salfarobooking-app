@@ -1,9 +1,7 @@
 node_modules
-.env
 npm-debug.log
-Dockerfile
-.dockerignore
 .git
 .gitignore
 README.md
 token.json
+.docker

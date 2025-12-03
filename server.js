@@ -1,246 +1,255 @@
-const fs = require('fs').promises;
+// --- Dependencias ---
 const path = require('path');
-require('dotenv').config();
-const { google } = require('googleapis');
-const express = require('express');
+require('dotenv').config(); // Carga variables de entorno desde .env
+const { google } = require('googleapis'); // SDK de Google APIs
+const express = require('express'); // Framework Express para el servidor web
+const cors = require('cors'); // Middleware para habilitar CORS
+const admin = require('firebase-admin'); // SDK de Firebase Admin para interactuar con Firebase
+const { body, validationResult } = require('express-validator'); // Para validación de datos de entrada
 
+// --- Inicializar Firebase Admin ---
+// IMPORTANTE: NO subas el archivo firebase-service-account.json a tu repositorio público.
+// En un entorno de producción (como Cloud Run o Cloud Functions),
+// las credenciales se deben manejar de forma segura, por ejemplo,
+// a través de variables de entorno o el metadata server de GCP.
+// Para desarrollo local, si usas un archivo, asegúrate de que esté ignorado por Git.
+const serviceAccount = require('./firebase-service-account.json');
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+const db = admin.firestore(); // Instancia de Firestore
+
+// --- Configuración de Express ---
 const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 8080; // Puerto donde escuchará el servidor
 
-const SCOPES = [
-    'https://www.googleapis.com/auth/calendar.events',
-    'https://www.googleapis.com/auth/calendar.readonly'
+// Habilita el middleware CORS para permitir solicitudes desde el frontend.
+// Esto maneja correctamente las solicitudes previas (preflight requests)
+// y los encabezados de autenticación.
+// Configuración de CORS para permitir peticiones desde tu dominio y local
+const allowedOrigins = [
+  'https://salfaro.cl',
+  'https://www.salfaro.cl',
+  'http://localhost:5173',
+  'http://localhost:8080',
+  'http://127.0.0.1:5500' // Por si usas Live Server
 ];
 
-const TOKEN_PATH = path.join(process.cwd(), 'token.json');
-
-const credentials = {
-  web: {
-    client_id: process.env.CLIENT_ID,
-    project_id: process.env.PROJECT_ID,
-    auth_uri: "https://accounts.google.com/o/oauth2/auth",
-    token_uri: "https://oauth2.googleapis.com/token",
-    auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-    client_secret: process.env.CLIENT_SECRET,
-    // *** CAMBIO CLAVE PARA CLOUD RUN ***
-    redirect_uris: [
-      process.env.NODE_ENV === 'production' && process.env.K_SERVICE
-        ? `https://${process.env.K_SERVICE}-<TU_REVISION>-uc.a.run.app/oauth2callback` // Esto necesita un ajuste manual temporal
-        : 'http://localhost:3000/oauth2callback'
-    ]
-  }
-};
-// **NOTA IMPORTANTE:** La URL de Cloud Run no se puede determinar dinámicamente en tiempo de compilación.
-// Para la primera implementación, tendrás que **HARDCODEARLA TEMPORALMENTE**
-// o simplemente **configurar http://localhost:3000/oauth2callback y la URL final de Cloud Run
-// en la consola de Google Cloud para las redirecciones autorizadas**.
-// La forma más fácil para la primera implementación es mantener 'http://localhost:3000/oauth2callback' aquí
-// y **añadir la URL de Cloud Run MANUAMLMENTE en la consola de Google Cloud DESPUÉS del primer despliegue**.
-// Luego, si quieres, puedes volver y actualizar este array.
-
-app.use(express.json());
-app.use(express.static(__dirname));
-
-// Cargar credenciales guardadas
-async function loadSavedCredentialsIfExist() {
-  try {
-    const content = await fs.readFile(TOKEN_PATH);
-    const credentials = JSON.parse(content);
-    return google.auth.fromJSON(credentials);
-  } catch (err) {
-    console.error('Error al cargar token.json:', err.message);
-    return null;
-  }
-}
-
-// Guardar credenciales
-async function saveCredentials(client) {
-  const payload = JSON.stringify({
-    type: 'authorized_user',
-    client_id: credentials.web.client_id,
-    client_secret: credentials.web.client_secret,
-    refresh_token: client.credentials.refresh_token,
-  });
-  await fs.writeFile(TOKEN_PATH, payload);
-  console.log('Credenciales guardadas con éxito en token.json.');
-}
-
-// Obtener cliente OAuth2
-async function getOAuth2Client() {
-  const { client_secret, client_id, redirect_uris } = credentials.web;
-  const oAuth2Client = new google.auth.OAuth2(
-    client_id,
-    client_secret,
-    redirect_uris[0]
-  );
-
-  const savedCredentials = await loadSavedCredentialsIfExist();
-  if (savedCredentials) {
-    oAuth2Client.setCredentials(savedCredentials.credentials);
-    console.log('Credenciales de Google cargadas.');
-  }
-  return oAuth2Client;
-}
-
-// Ruta para iniciar autenticación con Google
-app.get('/auth/google', async (req, res) => {
-  try {
-    const oAuth2Client = await getOAuth2Client();
-    const authUrl = oAuth2Client.generateAuthUrl({
-      access_type: 'offline',
-      scope: SCOPES,
-    });
-    res.redirect(authUrl);
-  } catch (error) {
-    console.error('Error durante la autenticación:', error);
-    res.status(500).json({ message: 'Hubo un error en la autenticación. Revisa la consola del servidor para más detalles.' }); // Envía JSON
-  }
-});
-
-// Ruta de callback de Google
-app.get('/oauth2callback', async (req, res) => {
-  const code = req.query.code;
-  if (!code) {
-    return res.status(400).json({ message: 'No se recibió el código de autorización.' }); // Envía JSON
-  }
-
-  try {
-    const oAuth2Client = await getOAuth2Client();
-    const { tokens } = await oAuth2Client.getToken(code);
-    oAuth2Client.setCredentials(tokens);
-    await saveCredentials(oAuth2Client);
-    res.send('¡Autenticación exitosa! Puedes cerrar esta ventana.'); // Este .send() está bien porque es una página de respuesta del navegador
-  } catch (error) {
-    console.error('Error durante la autenticación:', error);
-    res.status(500).json({ message: 'Hubo un error en la autenticación. Revisa la consola del servidor para más detalles.' }); // Envía JSON
-  }
-});
-
-// Ruta para obtener la disponibilidad del calendario
-app.get('/available-slots', async (req, res) => {
-  try {
-    const auth = await getOAuth2Client();
-    if (!auth.credentials || !auth.credentials.refresh_token) {
-      console.log('No hay credenciales. El usuario necesita autenticarse.');
-      return res.json({ busyTimes: [] });
+app.use(cors({
+  origin: function (origin, callback) {
+    // Permitir peticiones sin origen (como las de Postman o apps móviles)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      // Si el origen no está en la lista, pero es un subdominio de firebase o cloud run, podrías permitirlo
+      // Por seguridad, mejor mantenemos la lista estricta o permitimos todo si prefieres
+      // Para desarrollo rápido y evitar bloqueos, permitiremos todo por ahora si falla la lista:
+      return callback(null, true);
     }
-    console.log('Iniciando consulta de disponibilidad del calendario...');
-    const calendar = google.calendar({ version: 'v3', auth });
+    return callback(null, true);
+  },
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+// Middleware para parsear el cuerpo de las solicitudes como JSON.
+app.use(express.json());
 
-    const timeMin = new Date().toISOString();
-    const timeMax = new Date(new Date().setMonth(new Date().getMonth() + 2)).toISOString();
+// 🔹 SERVIR ARCHIVOS ESTÁTICOS desde el directorio 'public'
+// Esto es CRUCIAL para que el frontend (HTML, CSS, JS, imágenes) se sirva correctamente
+app.use(express.static(path.join(__dirname, 'public')));
 
-    const response = await calendar.freebusy.query({
-      requestBody: {
-        timeMin: timeMin,
-        timeMax: timeMax,
-        timeZone: 'America/Santiago', // Aseguramos la zona horaria
-        items: [{ id: 'primary' }],
-      },
+// --- Función para crear evento en Google Calendar (AHORA USANDO EL TOKEN DE ACCESO DEL USUARIO) ---
+/**
+ * Crea un evento en el Google Calendar principal del usuario autenticado.
+ * @param {object} params
+ * @param {string} params.resumen - Título del evento.
+ * @param {string} params.descripcion - Descripción del evento.
+ * @param {string} params.inicio - Fecha y hora de inicio en formato ISO 8601.
+ * @param {string} params.fin - Fecha y hora de fin en formato ISO 8601.
+ * @param {string} params.alumnoEmail - Email del usuario (puede ser usado para asistentes si se desea).
+ * @param {string} params.userAccessToken - Token de acceso de OAuth 2.0 del usuario para Google Calendar.
+ */
+async function crearEventoCalendarUsuario({ resumen, descripcion, inicio, fin, alumnoEmail, userAccessToken }) {
+  // 1. Validar que tenemos un token de acceso del usuario
+  if (!userAccessToken) {
+    throw new Error('No se proporcionó el token de acceso de Google Calendar del usuario.');
+  }
+
+  // 2. Usar el token de acceso del usuario para autenticar con la API de Google
+  // google.auth.OAuth2 es una clase para manejar la autenticación OAuth 2.0
+  const authClient = new google.auth.OAuth2();
+  // Establece las credenciales usando el accessToken proporcionado por el frontend
+  authClient.setCredentials({ access_token: userAccessToken });
+
+  // Inicializa el cliente de la API de Calendar con las credenciales del usuario
+  const calendar = google.calendar({ version: 'v3', auth: authClient });
+
+  // Define la estructura del evento a crear
+  const evento = {
+    summary: resumen, // Título del evento
+    description: descripcion, // Detalles del evento
+    start: { dateTime: inicio, timeZone: 'America/Santiago' }, // Hora de inicio del evento
+    end: { dateTime: fin, timeZone: 'America/Santiago' }, // Hora de fin del evento
+    // Nota: 'primary' significa el calendario principal del usuario.
+    // Como el evento se crea directamente en SU calendario, no es necesario
+    // añadirse a sí mismo como 'attendee' a menos que quieras invitar a otros.
+    // attendees: [{ email: alumnoEmail }], // Descomenta si quieres invitar explícitamente al alumno o a otros
+  };
+
+  // Inserta el evento en el calendario principal del usuario
+  await calendar.events.insert({
+    calendarId: 'primary', // El ID 'primary' se refiere al calendario principal del usuario autenticado
+    resource: evento, // Los datos del evento
+    sendUpdates: 'all' // Envía notificaciones de actualización/creación a los invitados (si los hay)
+  });
+}
+
+// --- Middleware para validar el token de Firebase del usuario ---
+/**
+ * Middleware para verificar la autenticación del usuario mediante su token de Firebase.
+ * Extrae el token de la cabecera 'Authorization', lo verifica con Firebase Admin SDK,
+ * y adjunta la información del usuario decodificada a 'req.user'.
+ */
+async function validateFirebaseToken(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'No se proporcionó token de autenticación.' });
+  }
+  const idToken = authHeader.split('Bearer ')[1]; // Extrae el token
+  try {
+    const decodedToken = await admin.auth().verifyIdToken(idToken); // Verifica el token
+    req.user = decodedToken; // Guarda la info del usuario en el objeto request
+    next(); // Continúa con la siguiente función middleware o ruta
+  } catch (error) {
+    console.error('Error al validar token:', error);
+    res.status(403).json({ message: 'Token de autenticación inválido o expirado.' });
+  }
+}
+
+// --- Rutas protegidas por el middleware de autenticación ---
+
+// Ruta para obtener los horarios ocupados (ya reservados)
+app.get('/available-slots', validateFirebaseToken, async (req, res) => {
+  try {
+    let { fecha } = req.query;
+    if (!fecha) {
+      fecha = new Date().toISOString().split('T')[0]; // Usa la fecha actual si no se especifica
+    }
+    // Consulta Firestore para obtener reservas en la fecha dada
+    const snapshot = await db.collection('reservas').where('fecha', '==', fecha).get();
+    const busyTimes = snapshot.docs.map(doc => {
+      const hora = doc.data().hora;
+      // Calcula el inicio y fin de la cita para el formato requerido por el frontend
+      const inicio = new Date(`${fecha}T${hora}:00`).toISOString();
+      const fin = new Date(new Date(inicio).getTime() + 60 * 60 * 1000).toISOString(); // Asume 1 hora de duración
+      return { start: inicio, end: fin };
     });
-
-    const busyTimes = response.data.calendars.primary.busy;
-    console.log('Consulta de disponibilidad exitosa. Horarios ocupados:', busyTimes.length);
     res.json({ busyTimes });
   } catch (error) {
-    console.error('Error al obtener la disponibilidad:', error);
-    res.status(500).json({ message: 'Hubo un error al obtener la disponibilidad. Revisa la consola del servidor para más detalles.' }); // Envía JSON
+    console.error('Error en /available-slots:', error);
+    res.status(500).json({ message: 'Error al obtener disponibilidad' });
   }
 });
 
-// Ruta para reservar un evento
-app.post('/book', async (req, res) => {
-  const { name, email, phone, date, time, service, modality, address } = req.body;
-  console.log('Solicitud de reserva recibida:', req.body);
-
-  if (!name || !email || !phone || !date || !time) { // Se incluye 'phone' en la validación
-    console.error('Faltan datos para la reserva.');
-    // *** CAMBIADO: Envía JSON en caso de datos faltantes ***
-    return res.status(400).json({ message: 'Faltan datos para la reserva.' });
-  }
-
-  const startDateTime = new Date(`${date}T${time}:00`);
-  // Ajuste: Si tus citas duran un tiempo diferente a 1 hora, cambia esto.
-  // Por ejemplo, para 30 minutos: `startDateTime.getTime() + 30 * 60 * 1000`
-  const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000); 
-
-  try {
-    const auth = await getOAuth2Client();
-    if (!auth.credentials || !auth.credentials.refresh_token) {
-      console.error('No hay credenciales de autenticación. Por favor, autentica la aplicación.');
-      // *** CAMBIADO: Envía JSON en caso de credenciales faltantes ***
-      return res.status(401).json({ message: 'No hay credenciales de autenticación. Por favor, autentica la aplicación en /auth/google' });
+// Ruta para agendar una nueva reserva
+app.post(
+  '/book',
+  validateFirebaseToken, // 🔹 Aplica el middleware de validación del token de Firebase
+  [
+    // Reglas de validación para los datos de entrada
+    body('name').not().isEmpty().withMessage('El nombre es obligatorio'),
+    body('email').isEmail().withMessage('El email no es válido'),
+    body('phone').not().isEmpty().withMessage('El teléfono es obligatorio'),
+    body('date').isISO8601().toDate().withMessage('La fecha no es válida'),
+    body('time').not().isEmpty().withMessage('La hora es obligatoria'),
+    // El 'googleCalendarAccessToken' no se valida con express-validator aquí,
+    // se maneja con una verificación manual más adelante.
+  ],
+  async (req, res) => {
+    // Verifica si hay errores de validación
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-    const calendar = google.calendar({ version: 'v3', auth });
-    console.log('Credenciales de Google validadas. Intentando crear evento...');
 
-    const eventSummary = service ? `${service} con ${name}` : `Cita con ${name}`;
-    
-    // --- INICIO DE LA ÚNICA MODIFICACIÓN ---
-    const eventDescription = `
-      **Detalles de la Cita:**
-      - Servicio: ${service || 'No especificado'}
-      - Modalidad: ${modality || 'No especificado'}
-      ${modality === 'Presencial' ? `- Dirección: ${address || 'No especificada'}` : ''}
-      
-      **Datos del Cliente:**
-      - Nombre: ${name || 'No especificado'}
-      - Email: ${email || 'No especificado'}
-      - Teléfono: ${phone || 'No especificado'}
-    `.trim();
-    // --- FIN DE LA ÚNICA MODIFICACIÓN ---
+    // Extrae los datos del cuerpo de la solicitud, incluyendo el nuevo token de Calendar
+    const { phone, date, time, service, modality, address, googleCalendarAccessToken } = req.body;
 
-    const event = {
-      summary: eventSummary,
-      description: eventDescription,
-      start: {
-        dateTime: startDateTime.toISOString(),
-        timeZone: 'America/Santiago', // Aseguramos la zona horaria
-      },
-      end: {
-        dateTime: endDateTime.toISOString(),
-        timeZone: 'America/Santiago', // Aseguramos la zona horaria
-      },
-      attendees: [
-        { email: email },
-        // Si quieres que te notifique a ti, puedes añadir tu propio email aquí:
-        // { email: 'tu_email_aqui@gmail.com' }, 
-      ],
-      // Puedes añadir más opciones, por ejemplo, recordatorios
-      reminders: {
-        useDefault: false,
-        overrides: [
-          { method: 'email', minutes: 24 * 60 }, // 24 horas antes
-          { method: 'popup', minutes: 10 },    // 10 minutos antes
-        ],
-      },
-    };
+    // Usa la información del token de Firebase (adjuntada por validateFirebaseToken)
+    // para obtener el email y nombre del usuario autenticado, para mayor seguridad y consistencia.
+    const userEmail = req.user.email;
+    const userName = req.user.name;
+    const userId = req.user.uid;
 
-    const calendarId = 'primary'; // Usa 'primary' para el calendario principal del usuario autenticado
-    const result = await calendar.events.insert({
-      calendarId: calendarId,
-      resource: event,
-      sendUpdates: 'all' // Envía notificaciones a los invitados (en este caso, solo el email del usuario)
-    });
-
-    console.log('Evento creado con éxito. ID:', result.data.id);
-    // *** CAMBIADO: Envía respuesta JSON para que el frontend la procese correctamente ***
-    res.status(200).json({ message: '¡Reserva confirmada! Se ha añadido un evento a tu calendario y se ha enviado un correo de confirmación.', eventId: result.data.id });
-  } catch (error) {
-    console.error('Error al crear el evento. Detalles del error:', error.message);
-    if (error.response) {
-      console.error('Error de respuesta de la API:', error.response.data);
+    // 🚨 ¡Validación específica para el token de acceso a Google Calendar!
+    // Es crucial que este token esté presente para crear el evento en el calendario del usuario.
+    if (!googleCalendarAccessToken) {
+      return res.status(400).json({ message: 'Se requiere el token de acceso a Google Calendar.' });
     }
-    // *** CAMBIADO: Envía respuesta JSON en caso de error ***
-    res.status(500).json({ message: 'Hubo un error al confirmar la reserva. Revisa la consola del servidor para más detalles.', error: error.message });
+
+    try {
+      // --- PASO 1: Guardar la reserva en Firestore ---
+      await db.collection('reservas').add({
+        userId, // ID del usuario de Firebase
+        nombre: userName,
+        email: userEmail,
+        telefono: phone,
+        fecha: date,
+        hora: time,
+        servicio: service || 'No especificado',
+        modalidad: modality || 'No especificado',
+        direccion: address || '', // Puede estar vacío si la modalidad no es presencial
+        createdAt: admin.firestore.FieldValue.serverTimestamp(), // Marca de tiempo del servidor
+      });
+
+      // --- PASO 2: Crear el evento en el Google Calendar del usuario ---
+      // Preparación de los datos del evento para Google Calendar
+      const inicioEvento = `${date}T${time}:00`;
+      // Asume una duración de 1 hora para el evento. Ajusta si tus citas tienen otra duración.
+      const finEvento = new Date(new Date(inicioEvento).getTime() + 60 * 60 * 1000).toISOString();
+      const descripcionEvento = `
+        Servicio: ${service || 'No especificado'}
+        Modalidad: ${modality || 'No especificado'}
+        ${modality === 'Presencial' ? `Dirección: ${address || 'No especificada'}` : ''}
+        Nombre: ${userName}
+        Email: ${userEmail}
+        Teléfono: ${phone}
+      `;
+
+      // 🚨 ¡LLAMADA A LA FUNCIÓN PARA CREAR EL EVENTO CON EL TOKEN DEL USUARIO! 🚨
+      await crearEventoCalendarUsuario({
+        resumen: service ? `${service} con ${userName}` : `Cita con ${userName}`, // Resumen del evento
+        descripcion: descripcionEvento,
+        inicio: inicioEvento,
+        fin: finEvento,
+        alumnoEmail: userEmail,
+        userAccessToken: googleCalendarAccessToken // 🚨 PASAMOS EL TOKEN DE ACCESO DEL USUARIO AQUÍ
+      });
+
+      // Si todo sale bien, envía una respuesta exitosa
+      res.status(200).json({ message: '¡Reserva confirmada! Evento creado en tu Google Calendar.' });
+    } catch (error) {
+      // Manejo de errores
+      console.error('Error en /book:', error);
+      // Envía un mensaje de error descriptivo al frontend
+      res.status(500).json({ message: 'Hubo un error al crear la reserva o al añadir el evento a tu Google Calendar. Por favor, inténtalo de nuevo.' });
+    }
   }
+);
+
+// Ruta de verificación de estado
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', message: 'Backend funcionando correctamente 🚀' });
 });
 
-// Ruta principal
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+// --- Ruta catch-all para servir el frontend ---
+// Cualquier ruta GET que no coincida con las rutas de API anteriores
+// servirá el archivo index.html (esto permite el routing del frontend)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(port, () => {
-  console.log(`Servidor escuchando en http://localhost:${port}`);
+// --- Iniciar servidor ---
+app.listen(PORT, () => {
+  console.log(`Servidor Express corriendo en puerto ${PORT}`);
 });
