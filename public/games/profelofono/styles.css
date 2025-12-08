@@ -1,0 +1,525 @@
+:root {
+    --bg-color: #222;
+    --case-color: #ffeb3b;
+    /* Toy Yellow */
+    --case-border: #000;
+
+    /* Comic Style Vars */
+    --border-width: 3px;
+    --shadow-offset: 6px;
+
+    /* User Requested Colors */
+    --user-c: #ff1a1a;
+    /* More vibrant Red */
+    --user-d: #ff9800;
+    --user-e: #ffea00;
+    --user-f: #00e676;
+    --user-g: #00b0ff;
+    --user-a: #ffffff;
+    --user-b: #e040fb;
+
+    --sharp-color: #3d5afe;
+
+    --screw-color: #eee;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    color: #000;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url('background.png') no-repeat center center fixed;
+    background-size: cover;
+}
+
+.app-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Comic halftone or overlay effect could go here, but simple darken is safer for contrast */
+    background-color: rgba(0, 0, 0, 0.2);
+    z-index: -1;
+}
+
+.app-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.embedded-branding {
+    position: absolute;
+    bottom: 3%;
+    right: 4%;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    /* Stack text since there is no logo */
+    align-items: flex-end;
+    pointer-events: none;
+    opacity: 0.9;
+    max-width: 40%;
+    transform-origin: bottom right;
+}
+
+/* Logo Removed */
+
+.branding-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.embedded-branding h2 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin: 0;
+    line-height: 1;
+    color: #444;
+    color: #000;
+    font-style: italic;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+}
+
+.branding-credit {
+    font-size: 0.65rem;
+    font-weight: 700;
+    margin-top: 2px;
+    color: #333;
+    background: transparent;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    text-shadow: none;
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* Responsive Scaling for Mobile */
+@media (max-width: 600px) {
+    .embedded-branding {
+        transform: scale(0.65);
+        bottom: 2%;
+        right: 3%;
+    }
+}
+
+@media (max-width: 380px) {
+
+    /* Very small devices */
+    .embedded-branding {
+        transform: scale(0.5);
+    }
+}
+
+/* Landscape Mobile Tweaks - Ensure it doesn't block keys if height is small */
+@media (orientation: landscape) and (max-height: 500px) {
+    .embedded-branding {
+        transform: scale(0.5);
+        bottom: 5px;
+        right: 15px;
+    }
+}
+
+.instrument-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    padding-bottom: 40px;
+}
+
+.metalophone-frame {
+    position: relative;
+    background-color: var(--case-color);
+    padding: 40px 30px 80px 30px;
+    border-radius: 40px;
+    /* Comic Border and Shadow */
+    border: var(--border-width) solid #000;
+    box-shadow:
+        inset 0 0 0 4px rgba(255, 255, 255, 0.4),
+        /* Inner vivid highlight */
+        10px 10px 0 rgba(0, 0, 0, 0.3),
+        /* Hard shadow */
+        15px 15px 0 rgba(0, 0, 0, 1);
+    /* Deep black shadow block */
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 98vw;
+    max-width: 1400px;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    border-bottom-left-radius: 60px;
+    border-bottom-right-radius: 60px;
+}
+
+.case-handle {
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 40px;
+    background-color: var(--case-color);
+    border-radius: 0 0 20px 20px;
+    border: var(--border-width) solid #000;
+    border-top: none;
+    /* Merge with body */
+    box-shadow:
+        10px 10px 0 rgba(0, 0, 0, 1);
+    z-index: 0;
+}
+
+.case-handle::after {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 20px;
+    right: 20px;
+    height: 30px;
+    background-color: #333;
+    border-radius: 15px;
+    border: var(--border-width) solid #000;
+    background: #222;
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+}
+
+.sharps-row {
+    margin-bottom: -30px;
+    z-index: 5;
+    padding: 0 4%;
+    pointer-events: none;
+}
+
+.naturals-row {
+    z-index: 4;
+    align-items: flex-start;
+}
+
+.key {
+    position: relative;
+    border: var(--border-width) solid #000;
+    outline: none;
+    cursor: pointer;
+    border-radius: 8px;
+    /* Slightly squarer for comic look */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 0;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: #000;
+    /* Black text for comic contrast usually, or white with outline */
+    /* Let's go White text with Black outline for maximum readability on colors */
+    color: white;
+    text-shadow:
+        2px 2px 0 #000,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
+
+    box-shadow:
+        4px 4px 0 rgba(0, 0, 0, 1);
+    /* Hard block shadow */
+    transition: transform 0.1s, box-shadow 0.1s;
+    pointer-events: auto;
+}
+
+.key:active,
+.key.active {
+    transform: translate(4px, 4px);
+    /* Move INTO shadow */
+    box-shadow:
+        0px 0px 0 rgba(0, 0, 0, 1);
+    /* Shadow disappears */
+    filter: brightness(1.4) contrast(1.2);
+    /* Make it POP */
+    border-color: #fff;
+    /* White border to indicate selection */
+    z-index: 100;
+    /* Bring to front */
+}
+
+/* Comic "Shine" on keys */
+.key::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 25%;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 4px;
+    z-index: 3;
+}
+
+/* Screws as simple circles with outlines */
+.key::after {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    /* Bottom screw default */
+    width: 10px;
+    height: 10px;
+    background: #ddd;
+    border: 2px solid #000;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+/* Sharps only have bottom screw in this simplified logic, or we add another element via JS. 
+   css ::after is one element. Let's just stick to one visual pivot for the cartoon look.
+   Or use the previous dual-pseudo method if we want two.
+   Let's try to keep it simple: one distinctive screw at the bottom is enough for "cartoon toy".
+*/
+
+/* But wait, user liked the screws. Let's restore the top screw if possible.
+   The ::before is now used for Shine. 
+   We can make the Shine a gradient on the background instead?
+   Yes.
+*/
+
+.key {
+    /* ... existing props ... */
+    /* Add gradient for shine */
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 30%);
+}
+
+/* Restore screws using pseudo elements */
+.key::before,
+.key::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #eee;
+    border: 2px solid #000;
+    border-radius: 50%;
+    z-index: 2;
+    box-shadow: none;
+    /* Flat screw */
+}
+
+/* Override previous shine ::before */
+.key::before {
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    /* White screw */
+}
+
+.key::after {
+    bottom: 8px;
+    top: auto;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+
+.key.sharp {
+    width: 5.5%;
+    height: 150px;
+    margin: 0 0.75%;
+    background-color: var(--sharp-color);
+    z-index: 10;
+}
+
+.key.natural {
+    flex: 1;
+    margin: 0 4px;
+}
+
+.spacer {
+    width: 7%;
+    visibility: hidden;
+}
+
+.note-c5,
+.note-c6 {
+    background-color: var(--user-c);
+}
+
+.note-d5,
+.note-d6 {
+    background-color: var(--user-d);
+}
+
+.note-e5,
+.note-e6 {
+    background-color: var(--user-e);
+}
+
+.note-f5,
+.note-f6 {
+    background-color: var(--user-f);
+}
+
+.note-g4,
+.note-g5,
+.note-g6 {
+    background-color: var(--user-g);
+}
+
+.note-a4,
+.note-a5 {
+    background-color: var(--user-a);
+}
+
+/* White key special handling for comic mode */
+.note-a4,
+.note-a5 {
+    color: #fff;
+    /* Keep white with black outline, readable on white? */
+    /* On white background, white text with black outline is readable. */
+    /* screw border is black so it works. */
+}
+
+.note-b4,
+.note-b5 {
+    background-color: var(--user-b);
+}
+
+/* Heights */
+.key.natural:nth-child(1) {
+    height: 220px;
+}
+
+.key.natural:nth-child(2) {
+    height: 216px;
+}
+
+.key.natural:nth-child(3) {
+    height: 212px;
+}
+
+.key.natural:nth-child(4) {
+    height: 208px;
+}
+
+.key.natural:nth-child(5) {
+    height: 204px;
+}
+
+.key.natural:nth-child(6) {
+    height: 200px;
+}
+
+.key.natural:nth-child(7) {
+    height: 196px;
+}
+
+.key.natural:nth-child(8) {
+    height: 192px;
+}
+
+.key.natural:nth-child(9) {
+    height: 188px;
+}
+
+.key.natural:nth-child(10) {
+    height: 184px;
+}
+
+.key.natural:nth-child(11) {
+    height: 180px;
+}
+
+.key.natural:nth-child(12) {
+    height: 176px;
+}
+
+.key.natural:nth-child(13) {
+    height: 172px;
+}
+
+.key.natural:nth-child(14) {
+    height: 168px;
+}
+
+.key.natural:nth-child(15) {
+    height: 164px;
+}
+
+@media (max-width: 768px) {
+    .metalophone-frame {
+        width: 100vw;
+        border-radius: 20px;
+        padding: 20px 10px 60px 10px;
+    }
+
+    .key {
+        margin: 0 1px;
+        font-size: 0.7rem;
+        border-width: 2px;
+    }
+
+    .key.sharp {
+        margin: 0 1px;
+        width: 6%;
+    }
+
+    .spacer {
+        width: 8%;
+    }
+
+    .case-handle {
+        border-width: 2px;
+    }
+}
+
+/* Mobile Landscape Optimization - Final */
+/* Target any device in landscape with limited height */
+@media (orientation: landscape) and (max-height: 600px) {
+    .instrument-container {
+        padding: 0;
+        align-items: flex-end;
+        padding-bottom: 5px;
+        height: 100%;
+        overflow: hidden;
+        /* Prevent scrolling if scaled element overlays */
+    }
+
+    .metalophone-frame {
+        padding: 10px 5px 30px 5px;
+        border-radius: 20px;
+        /* Scale down to fit */
+        transform: scale(0.85);
+        transform-origin: bottom center;
+        margin-bottom: -10px;
+        /* Compensation for scale gap */
+    }
+}

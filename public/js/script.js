@@ -5,8 +5,10 @@ import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstati
 document.addEventListener('DOMContentLoaded', () => {
   // 🔹 Constante para la URL base del API.
   // Detecta si estamos en local para usar el servidor local, de lo contrario usa Cloud Run
-  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  const API_BASE = isLocal ? 'http://localhost:8080' : 'https://booking-app-641307576548.us-central1.run.app';
+  // 🔹 Constante para la URL base del API.
+  // SE FUERZA PRODUCCIÓN para que el usuario pueda probar el backend real desde su local
+  const API_BASE = 'https://booking-app-641307576548.us-central1.run.app';
+  // const API_BASE = isLocal ? 'http://localhost:8080' : 'https://booking-app-641307576548.us-central1.run.app';
   console.log('Conectando a API:', API_BASE);
 
   // 🔹 Almacena referencias a los elementos del DOM.
@@ -73,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
   messageBox.id = 'customMessageBox';
   document.body.appendChild(messageBox);
 
-  const showCustomMessageBox = (title, message, isError = false) => {
+  const showCustomMessageBox = (title, message, isError = false, callback = null) => {
     messageBox.innerHTML = `
       <div class="message-content ${isError ? 'error-message' : ''}">
         <h4>${title}</h4>
@@ -84,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
     messageBox.style.display = 'flex';
     messageBox.querySelector('.message-button').onclick = () => {
       messageBox.style.display = 'none';
-      if (!isError) closeModal();
+      if (callback) callback();
     };
   };
 
@@ -123,7 +125,25 @@ document.addEventListener('DOMContentLoaded', () => {
       const credential = GoogleAuthProvider.credentialFromResult(result);
       googleCalendarAccessToken = credential.accessToken; // ¡Guardamos el token!
 
-      userToken = await firebaseUser.getIdToken();
+      const realToken = await firebaseUser.getIdToken();
+
+      // 🔹 VERIFICACIÓN DE CONEXIÓN AL BACKEND
+      // Intentamos una llamada ligera para ver si el backend acepta el token.
+      // Si falla (500, 403), lanzamos error para que caiga en el catch y active el MOCK MODE.
+      try {
+        const probe = await fetch(`${API_BASE}/available-slots?fecha=${new Date().toISOString().split('T')[0]}`, {
+          method: 'GET',
+          headers: { 'Authorization': `Bearer ${realToken}` }
+        });
+        if (!probe.ok && probe.status === 500) {
+          throw new Error('Backend rechazó el token (posible error de configuración/CORS/Auth)');
+        }
+      } catch (e) {
+        console.warn('Fallo en verificación de backend con token real:', e);
+        throw e; // Esto enviará al catch principal -> Mock Mode
+      }
+
+      userToken = realToken;
 
       nameInput.value = firebaseUser.displayName;
       emailInput.value = firebaseUser.email;
@@ -136,7 +156,29 @@ document.addEventListener('DOMContentLoaded', () => {
       showCustomMessageBox('¡Bienvenido!', `Hola, ${firebaseUser.displayName}. Ahora puedes agendar tu cita.`);
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
-      showCustomMessageBox('Error de autenticación', 'Hubo un problema al iniciar sesión con Google.', true);
+
+      // Fallback para desarrollo/local o si falla la autenticación real
+      console.warn('Usando inicio de sesión simulado (Mock) por fallo en Auth.');
+
+      firebaseUser = {
+        displayName: "Usuario de Prueba",
+        email: "test@ejemplo.com",
+        photoURL: "https://ui-avatars.com/api/?name=Usuario+Prueba&background=random",
+        getIdToken: async () => "mock-token-123"
+      };
+
+      userToken = "mock-token-123";
+      googleCalendarAccessToken = "mock-access-token";
+
+      nameInput.value = firebaseUser.displayName;
+      emailInput.value = firebaseUser.email;
+      userPhoto.src = firebaseUser.photoURL;
+      userName.textContent = firebaseUser.displayName;
+
+      document.getElementById('google-signin-btn').style.display = 'none';
+      userInfoSection.style.display = 'flex';
+
+      showCustomMessageBox('Modo de Prueba', 'No se pudo conectar con Google (probablemente por estar en local). Se ha iniciado una sesión de prueba para que puedas ver el resto del formulario.', false);
     } finally {
       showLoadingIndicator(false);
     }
@@ -150,6 +192,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     showLoadingIndicator(true);
+
+    // 🔹 MOCK BYPASS: Si es usuario de prueba, no consultamos al backend real
+    if (userToken === 'mock-token-123') {
+      console.warn('⚠️ MOCK MODE: Usando horarios simulados.');
+      busyTimes = []; // Sin horarios ocupados para prueba
+      showLoadingIndicator(false);
+      renderCalendar();
+      if (selectedDate) {
+        const dayOfWeek = (selectedDate.getDay() === 0) ? 7 : selectedDate.getDay();
+        renderTimeSlots(dayOfWeek, selectedDate);
+      }
+      return;
+    }
+
     fechaConsulta = fechaConsulta || new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString().split('T')[0];
 
     try {
@@ -293,14 +349,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // =============== ENVÍO DE RESERVA ===============
   submitBtn.addEventListener('click', async (e) => {
+    console.log('🏁 [DEBUG] Click en Confirmar Reserva detectado');
     e.preventDefault();
+
     if (!userToken) {
+      console.warn('❌ [DEBUG] No hay userToken');
       showCustomMessageBox('Acceso denegado', 'Por favor, inicia sesión para agendar una cita.', true);
       return;
     }
-    if (!validateStep(4)) return;
+
+    console.log('✅ [DEBUG] UserToken presente. Validando paso 4...');
+    const isValid = validateStep(4);
+    console.log('🔍 [DEBUG] validateStep(4) resultado:', isValid);
+
+    if (!isValid) {
+      console.warn('❌ [DEBUG] Validación fallida. Deteniendo envío.');
+      return;
+    }
 
     showLoadingIndicator(true);
+    console.log('⏳ [DEBUG] Iniciando fetch al backend...');
 
     const formData = {
       name: nameInput.value,
@@ -314,6 +382,21 @@ document.addEventListener('DOMContentLoaded', () => {
       googleCalendarAccessToken: googleCalendarAccessToken
     };
 
+    // 🔹 MOCK SUBMISSION BYPASS (Para pruebas locales)
+    if (userToken === 'mock-token-123') {
+      console.warn('⚠️ MOCK MODE: Simulando envío al backend...');
+      setTimeout(() => {
+        showLoadingIndicator(false);
+        showCustomMessageBox(
+          '✅ Cita Simulada (Modo Prueba)',
+          'Como estás en modo local, NO se ha enviado correo real ni agendado en calendar.\n\nEn producción (salfaro.cl), esto funcionará real.',
+          false,
+          closeModal
+        );
+      }, 1500);
+      return;
+    }
+
     try {
       const resp = await fetch(`${API_BASE}/book`, {
         method: 'POST',
@@ -324,17 +407,23 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify(formData),
       });
 
-      const result = await resp.json();
+      let result;
+      try {
+        result = await resp.json();
+      } catch (e) {
+        // If response is not JSON, create a generic error message
+        result = { message: 'Error desconocido del servidor (respuesta no JSON)' };
+      }
 
       if (resp.ok) {
-        showCustomMessageBox('✅ Cita Agendada', 'Tu cita ha sido confirmada y se enviará una invitación a tu correo.', false);
+        showCustomMessageBox('✅ Cita Agendada', 'Tu cita ha sido confirmada y se enviará una invitación a tu correo.', false, closeModal);
       } else {
         const msg = result.message || 'Hubo un problema con la reserva.';
-        showCustomMessageBox('❌ Error al agendar', msg, true);
+        showCustomMessageBox('❌ Error al agendar', `Error: ${msg}`, true);
       }
     } catch (error) {
       console.error('Error al enviar la reserva:', error);
-      showCustomMessageBox('⚠️ Error de conexión', 'No se pudo conectar con el servidor. Inténtalo de nuevo.', true);
+      showCustomMessageBox('⚠️ Error de conexión', 'No se pudo conectar con el servidor. Verifica tu internet o el estado del backend.', true);
     } finally {
       showLoadingIndicator(false);
     }
@@ -364,7 +453,7 @@ document.addEventListener('DOMContentLoaded', () => {
       'Paso 3 de 5: Selecciona la modalidad',
       'Paso 4 de 5: Selecciona la fecha y hora',
       'Paso 5 de 5: Completa tus datos',
-      'Paso 6 de 5: Confirma tu cita',
+      'Paso 5 de 5: Confirma tu cita',
     ];
     subtitle.textContent = titles[currentStep];
   };
@@ -465,4 +554,24 @@ document.addEventListener('DOMContentLoaded', () => {
   steps[0].style.display = 'block';
   authSection.style.display = 'block';
   updateSubtitle();
+
+  // 🔹 Mobile Menu Logic
+  const mobileBtn = document.querySelector('.mobile-menu-btn');
+  const navLinks = document.querySelector('.nav-links');
+
+  if (mobileBtn && navLinks) {
+    mobileBtn.addEventListener('click', () => {
+      // Toggle logic using inline style or class
+      const isVisible = navLinks.style.display === 'flex';
+      navLinks.style.display = isVisible ? 'none' : 'flex';
+      navLinks.style.flexDirection = 'column';
+      navLinks.style.position = 'absolute';
+      navLinks.style.top = '100%';
+      navLinks.style.left = '0';
+      navLinks.style.width = '100%';
+      navLinks.style.background = 'white';
+      navLinks.style.padding = '1rem';
+      navLinks.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+    });
+  }
 });

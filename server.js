@@ -232,7 +232,7 @@ app.post(
       // Manejo de errores
       console.error('Error en /book:', error);
       // Envía un mensaje de error descriptivo al frontend
-      res.status(500).json({ message: 'Hubo un error al crear la reserva o al añadir el evento a tu Google Calendar. Por favor, inténtalo de nuevo.' });
+      res.status(500).json({ message: `Error backend: ${error.message}` });
     }
   }
 );

@@ -4,266 +4,319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profe Sergio</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <meta name="description"
+        content="Clases de música, composición y producción musical con el Profe Sergio Alfaro. Más de 12 años de experiencia.">
+    <title>Profe Sergio Alfaro | Academia de Música</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
+    <!-- Navigation -->
     <header class="header">
-        <div class="container">
+        <div class="container nav-container">
+            <a href="#" class="logo">
+                <span class="logo-icon"><i class="fas fa-music"></i></span>
+                Profe Sergio
+            </a>
+            <button class="mobile-menu-btn" aria-label="Abrir menú">
+                <i class="fas fa-bars"></i>
+            </button>
             <nav class="nav">
-                <img src="img/S.F-34.png" alt="Logo Academia" class="logo-img">
-                <a href="#" class="logo">Profe Sergio</a>
                 <ul class="nav-links">
-                    <li><a href="#home">INICIO</a></li>
-                    <li><a href="#services">SERVICIOS</a></li>
-                    <li><a href="#about-me">SOMBRE MI</a></li>
-                    <li><a href="#testimonials">TESTIMONIO</a></li>
-                    <li><a href="#youtube-video">MI TRABAJO</a></li>
-                    <li><a href="#" id="openModalBtnNav" class="btn">Agendar</a></li>
+                    <li><a href="#home">Inicio</a></li>
+                    <li><a href="#services">Servicios</a></li>
+                    <li><a href="#about-me">Sobre Mí</a></li>
+                    <li><a href="#testimonials">Testimonios</a></li>
+                    <li><a href="#work">Mi Trabajo</a></li>
+                    <li><a href="games/profelofono/index.html" class="highlight-link">Profelófono</a></li>
+                    <li><button id="openModalBtnNav" class="btn btn-primary">Agendar Clase</button></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <section class="hero" id="home">
-        <div class="container">
-            <h1>Domina tu pasión musical con la guía de un experto.</h1>
-            <p>Con más de 12 años de experiencia, Sergio Alfaro te acompaña en tu camino.</p>
-            <a href="#" id="openModalBtnHero" class="btn">Agendar</a>
-        </div>
-    </section>
+    <main>
+        <!-- Hero Section -->
+        <section class="hero" id="home">
+            <div class="hero-overlay"></div>
+            <div class="container hero-content">
+                <div class="hero-text">
+                    <h1>Domina tu pasión musical</h1>
+                    <p>Con más de 12 años de experiencia, te acompaño en cada nota de tu camino musical.</p>
+                    <div class="hero-buttons">
+                        <button id="openModalBtnHero" class="btn btn-primary btn-lg">Agendar Ahora</button>
+                        <a href="#services" class="btn btn-outline btn-lg">Explorar Servicios</a>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <section id="services" class="services">
-        <div class="container">
-            <h2>Servicios</h2>
-            <div class="services-grid">
-                <div class="service-card">
-                    <img src="img/unnamed.png" alt="Clases de Guitarra y Piano">
-                    <div class="service-content">
-                        <h3><i class="fas fa-guitar"></i> Clases de Guitarra, Piano y teoría musical</h3>
-                        <p>Aprende a tocar un instrumento con una metodología práctica a tu propio ritmo, donde
-                            aprenderás
-                            no solo a tocar tu propio instrumento, sino también a comprender la música desde sus bases.
+        <!-- Services Section -->
+        <section id="services" class="section services">
+            <div class="container">
+                <h2 class="section-title">Mis Servicios</h2>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <div class="card-icon"><i class="fas fa-guitar"></i></div>
+                        <h3>Clases de Instrumento</h3>
+                        <p>Guitarra, Piano y Teoría Musical. Metodología práctica adaptada a tu ritmo y objetivos.</p>
+                        <ul class="price-list">
+                            <li><strong>Sincrónica:</strong> $30.000</li>
+                            <li><strong>Asincrónica:</strong> $25.000</li>
+                        </ul>
+                    </div>
+                    <div class="service-card">
+                        <div class="card-icon"><i class="fas fa-pen-fancy"></i></div>
+                        <h3>Composición Musical</h3>
+                        <p>Transforma tus ideas en obras musicales completas. Arreglos y composición en diversos
+                            formatos.</p>
+                        <p class="price-note">Cotización personalizada</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="card-icon"><i class="fas fa-microphone-lines"></i></div>
+                        <h3>Producción Musical</h3>
+                        <p>Grabación, mezcla y mastering. Lleva tu proyecto al nivel profesional que merece.</p>
+                        <p class="price-note">Cotización personalizada</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Me -->
+        <section id="about-me" class="section about-me">
+            <div class="container about-container">
+                <div class="about-image">
+                    <img src="https://salfaro.cl/img/IMG_20240607_193045.jpg" alt="Sergio Alfaro" loading="lazy">
+                    <!-- Using absolute path as placeholder until I have local assets or valid relative path -->
+                </div>
+                <div class="about-text">
+                    <h2 class="section-title text-left">Sobre Mí</h2>
+                    <p class="lead">Más que un profesor, un mentor apasionado.</p>
+                    <p>Con más de una década de trayectoria, comparto la pasión que he cultivado en escenarios y
+                        estudios. Mi compromiso es ofrecerte una enseñanza de calidad, personalizada y efectiva.</p>
+                    <blockquote class="reflection">
+                        "La música estimula todas las áreas del cerebro. Es fundamental en el desarrollo humano, no solo
+                        para aprender un instrumento, sino para potenciar habilidades para la vida."
+                    </blockquote>
+                    <p class="signature">- Sergio Alfaro</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section id="testimonials" class="section testimonials">
+            <div class="container">
+                <h2 class="section-title">Lo que dicen mis alumnos</h2>
+                <div class="testimonials-grid">
+                    <div class="testimonial-card">
+                        <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
+                        <p>"¡Las clases son fantásticas! Mi técnica de guitarra ha mejorado muchísimo en poco tiempo."
                         </p>
-                        <div class="price-info">
-                            <p><strong>Clase sincrónica:</strong> $30.000</p>
-                            <p><strong>Clase asincrónica:</strong> $25.000</p>
+                        <div class="author">
+                            <span>Ana P.</span>
+                            <small>Estudiante de Guitarra</small>
                         </div>
                     </div>
-                </div>
-                <div class="service-card">
-                    <img src="img/unnamed (4).png" alt="Composición Musical">
-                    <div class="service-content">
-                        <h3><i class="fas fa-pen-alt"></i> Composición Musical</h3>
-                        <p>Te ofrezco mi servicio de composición musical en diferentes formatos, donde podrás transmitir
-                            tus ideas
-                            para ser llevada a una obra musical de uso exclusivo.</p>
-                        <div class="price-info">
-                            <p>El valor varía segun el formato y se establecerá en la reunión agendada</p>
+                    <div class="testimonial-card">
+                        <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
+                        <p>"Sergio me ayudó a encontrarle sentido a la teoría musical y aplicarla en mis composiciones."
+                        </p>
+                        <div class="author">
+                            <span>Carlos G.</span>
+                            <small>Estudiante de Composición</small>
                         </div>
                     </div>
-                </div>
-                <div class="service-card">
-                    <img src="img/unnamed (3).png" alt="Grabación de Audio">
-                    <div class="service-content">
-                        <h3><i class="fas fa-microphone-alt"></i> Producción musical</h3>
-                        <p>Te ayudo a desarrollar tus ideas al más alto nivel, donde viajaremos por la grabación, mezcla
-                            y mástering de tu proyecto musical, asegurando que suene profesional y esté listo para el
-                            mundo.</p>
-                        <div class="price-info">
-                            <p>El valor varía según las necesidades y se establecerá en la reunión agendada.</p>
+                    <div class="testimonial-card">
+                        <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
+                        <p>"Un profesor increíble. Logré producir mi primera canción desde cero con su guía."</p>
+                        <div class="author">
+                            <span>Sofía L.</span>
+                            <small>Producción Musical</small>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section id="about-me" class="about-me">
-        <div class="container about-content">
-            <div class="about-image">
-                <img src="img/IMG_20240607_193045.jpg" alt="Sobre mí">
-            </div>
-            <div class="about-text">
-                <h2>Sobre mí</h2>
-                <p>Con más de 12 años de trayectoria, Sergio Alfaro no solo enseña música, sino que comparte una pasión
-                    que ha cultivado en el escenario, el estudio y en cada clase. Te guiará con los conocimientos y
-                    experiencias adquiridas con la mejor calidad que un músico puede ofrecer.</p>
-                <h2>Reflexión Personal</h2>
-                <p>"Está comprobado científicamente que la música estimula las cinco áreas del cerebro. por este motivo,
-                    es fundamental reconocer la enseñanza musical como una instancia esencial en el desarrollo de estudiantes,
-                    sin importar edad, ya que no solo se trata de aprender a tocar un instrumento, sino de desarrollar
-                    habilidades tanto individuales como colectivas, donde la diversidad de nuestra sociedad ha crecido exponencialmente.
-                    <br><br>
-                    Por esta razón, como profesor y músico, me comprometo a ofrecer una enseñanza de calidad,
-                    adaptada a las necesidades de cada estudiante, para que puedan disfrutar y aprender de la música
-                    de manera efectiva y enriquecedora."
-                </p>
-                <p> "Sergio Alfaro"</p>
-            </div>
-        </div>
-    </section>
-
-    <section id="testimonials" class="testimonials">
-        <div class="container">
-            <h2>Lo que dicen mis alumnos</h2>
-            <div class="testimonial-grid">
-                <div class="testimonial-card">
-                    <p>"¡Las clases son fantásticas! Mi técnica de guitarra ha mejorado muchísimo."</p>
-                    <span>— Ana P., Estudiante</span>
-                </div>
-                <div class="testimonial-card">
-                    <p>"Me ayudó a encontrarle sentido a la música en la interpretación y creación musical."</p>
-                    <span>— Carlos G., Estudiante</span>
-                </div>
-                <div class="testimonial-card">
-                    <p>"Un profesor increíble. Aprendí a crear mi primera canción desde cero."</p>
-                    <span>— Sofía L., Estudiante</span>
+        <!-- Work / YouTube -->
+        <section id="work" class="section work-section">
+            <div class="container">
+                <h2 class="section-title">Mi Trabajo</h2>
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/watch?v=4FdRJxf4rtk" title="YouTube video player"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <section id="youtube-video" class="youtube-video">
-        <div class="container">
-            <h2>Mira mi trabajo en YouTube</h2>
-            <div class="video-wrapper">
-                <iframe src="https://www.youtube.com/embed/watch?v=4FdRJxf4rtk&list=RD4FdRJxf4rtk&start_radio=1"
-                    frameborder="0"
-                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen>
-                </iframe>
-            </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
     <footer class="footer">
-        <div class="container">
-            <p>© 2025 Creado por Sergio Alfaro. Todos los derechos reservados.</p>
+        <div class="container footer-content">
+            <p>&copy; 2025 Sergio Alfaro. Todos los derechos reservados.</p>
             <div class="social-links">
-                <a href="https://wa.me/56963340228" class="whatsapp-float" target="_blank">
-                    <i class="fab fa-whatsapp"></i>
-                </a>
-                <a href="https://www.youtube.com/@ProfeSergioAlfaro"><i class="fab fa-youtube"></i></a>
-                <a href="https://www.instagram.com/profesergioalfaro"><i class="fab fa-instagram"></i></a>
+                <a href="https://wa.me/56963340228" target="_blank" aria-label="WhatsApp"><i
+                        class="fab fa-whatsapp"></i></a>
+                <a href="https://www.youtube.com/@ProfeSergioAlfaro" target="_blank" aria-label="YouTube"><i
+                        class="fab fa-youtube"></i></a>
+                <a href="https://www.instagram.com/profesergioalfaro" target="_blank" aria-label="Instagram"><i
+                        class="fab fa-instagram"></i></a>
             </div>
         </div>
     </footer>
 
+    <!-- WhatsApp Float -->
+    <a href="https://wa.me/56963340228" class="whatsapp-float" target="_blank" aria-label="Chat en WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
+    <!-- Booking Modal (Preserving IDs for JS compatibility) -->
     <div id="bookingModal" class="modal">
         <div class="modal-content-inner">
-            <button class="close-btn">×</button>
-            <h3 id="modal-subtitle"></h3>
+            <button class="close-btn">&times;</button>
+            <h3 id="modal-subtitle">Paso 1 de 5: Inicia sesión</h3>
             <form id="bookingForm">
-                <div id="auth-section" class="form-step active" style="display: block;">
-                    <h3>Inicia sesión para ver horarios</h3>
-                    <p>Para agendar una cita, por favor, inicia sesión con tu cuenta de Google.</p>
+
+                <!-- Step 0: Auth -->
+                <div id="auth-section" class="form-step active">
+                    <div class="step-header">
+                        <i class="fas fa-user-circle"></i>
+                        <h3>Identifícate</h3>
+                    </div>
+                    <p>Para agendar, necesitamos verificar tu identidad.</p>
                     <button type="button" id="google-signin-btn" class="btn google-btn">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Logo_de_Google.png" alt="Google Logo">
-                        Iniciar sesión con Google
+                        <i class="fab fa-google"></i> Continuar con Google
                     </button>
-                    <div id="user-info" style="display: none; margin-top: 15px;">
-                        <img id="user-photo" src="" alt="User Photo" style="border-radius: 50%; width: 50px;">
-                        <span id="user-name" style="margin-left: 10px;"></span>
-                        <button type="button" id="start-booking-btn" class="btn" style="margin-left: 15px;">Empezar a agendar</button>
+                    <div id="user-info" style="display: none;">
+                        <img id="user-photo" src="" alt="Usuario">
+                        <div class="user-details">
+                            <span id="user-name"></span>
+                            <small>Sesión iniciada</small>
+                        </div>
+                        <button type="button" id="start-booking-btn" class="btn btn-primary">Comenzar a Agendar</button>
                     </div>
                 </div>
 
-                <div id="step-1" class="form-step" style="display: none;">
+                <!-- Step 1: Service -->
+                <div id="step-1" class="form-step">
                     <div class="form-group">
-                        <label for="service">Servicio:</label>
+                        <label for="service">¿Qué servicio buscas?</label>
                         <select id="service" required>
-                            <option value="" disabled selected>Selecciona un servicio</option>
+                            <option value="" disabled selected>Selecciona una opción</option>
                             <option value="Clases de música">Clases de música</option>
                             <option value="Composición musical">Composición musical</option>
                             <option value="Grabación de audio">Grabación de audio</option>
                         </select>
                     </div>
                     <div class="form-navigation">
-                        <button type="button" id="next-1" class="btn">Siguiente</button>
+                        <button type="button" id="next-1" class="btn btn-primary">Siguiente</button>
                     </div>
                 </div>
 
-                <div id="step-2" class="form-step" style="display: none;">
+                <!-- Step 2: Modality -->
+                <div id="step-2" class="form-step">
                     <div class="form-group">
-                        <label>Tipo de clase:</label>
+                        <label>Modalidad</label>
                         <div class="radio-group">
                             <label for="sincronica" class="class-type-card">
                                 <input type="radio" id="sincronica" name="modality" value="Presencial" required>
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>Presencial</span>
+                                <div class="card-inner">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>Presencial</span>
+                                </div>
                             </label>
                             <label for="asincronica" class="class-type-card">
                                 <input type="radio" id="asincronica" name="modality" value="Virtual">
-                                <i class="fas fa-laptop-house"></i>
-                                <span>Virtual</span>
+                                <div class="card-inner">
+                                    <i class="fas fa-laptop-house"></i>
+                                    <span>Virtual</span>
+                                </div>
                             </label>
                         </div>
                     </div>
                     <div id="address-container" class="form-group" style="display: none;">
-                        <label for="address">Dirección:</label>
-                        <input type="text" id="address" placeholder="Ingresa tu dirección">
+                        <label for="address">Dirección del domicilio:</label>
+                        <input type="text" id="address" placeholder="Ej: Av. Siempre Viva 123">
                     </div>
                     <div class="form-navigation">
-                        <button type="button" id="prev-2" class="btn">Anterior</button>
-                        <button type="button" id="next-2" class="btn">Siguiente</button>
+                        <button type="button" id="prev-2" class="btn btn-secondary">Anterior</button>
+                        <button type="button" id="next-2" class="btn btn-primary">Siguiente</button>
                     </div>
                 </div>
 
-                <div id="step-3" class="form-step" style="display: none;">
-                    <div class="calendar-header">
-                        <button type="button" id="prevMonth"><</button>
-                        <span id="currentMonth"></span>
-                        <button type="button" id="nextMonth">></button>
+                <!-- Step 3: Calendar -->
+                <div id="step-3" class="form-step">
+                    <div class="calendar-wrapper">
+                        <div class="calendar-header">
+                            <button type="button" id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                            <span id="currentMonth"></span>
+                            <button type="button" id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <div class="calendar-grid-header">
+                            <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
+                        </div>
+                        <div id="calendarGrid" class="calendar-grid"></div>
                     </div>
-                    <div class="calendar-grid-header">
-                        <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
-                    </div>
-                    <div id="calendarGrid" class="calendar-grid"></div>
-                    <div id="timeSlotsContainer" class="form-group" style="display: none;">
-                        <label>Selecciona una hora:</label>
+
+                    <div id="timeSlotsContainer" class="form-group animated-fade" style="display: none;">
+                        <label>Horarios Disponibles:</label>
                         <div id="timeSlots"></div>
                     </div>
+
                     <input type="hidden" id="selectedDateInput" name="selectedDate">
                     <input type="hidden" id="selectedTimeInput" name="selectedTime">
+
                     <div class="form-navigation">
-                        <button type="button" id="prev-3" class="btn">Anterior</button>
-                        <button type="button" id="next-3" class="btn">Siguiente</button>
+                        <button type="button" id="prev-3" class="btn btn-secondary">Anterior</button>
+                        <button type="button" id="next-3" class="btn btn-primary">Siguiente</button>
                     </div>
                 </div>
 
-                <div id="step-4" class="form-step" style="display: none;">
-                    <h2>Paso 4 de 5: Completa tus datos</h2>
+                <!-- Step 4: Contact Info -->
+                <div id="step-4" class="form-step">
                     <div class="form-group">
-                        <label for="name">Nombre completo:</label>
+                        <label for="name">Nombre Completo</label>
                         <input type="text" id="name" name="name" required placeholder="Tu nombre">
                     </div>
                     <div class="form-group">
-                        <label for="email">Correo electrónico:</label>
-                        <input type="email" id="email" name="email" required placeholder="tu.correo@ejemplo.com">
+                        <label for="email">Correo Electrónico</label>
+                        <input type="email" id="email" name="email" required placeholder="correo@ejemplo.com">
                     </div>
                     <div class="form-group" id="phone-container">
-                        <label for="phone">Teléfono:</label>
-                        <input type="tel" id="phone" name="phone" required placeholder="Ej: +56912345678">
+                        <label for="phone">Teléfono / WhatsApp</label>
+                        <input type="tel" id="phone" name="phone" required placeholder="+56 9 1234 5678">
                     </div>
                     <div class="form-navigation">
-                        <button type="button" id="prev-4" class="btn">Anterior</button>
-                        <button type="button" id="next-4" class="btn">Revisar Cita</button>
+                        <button type="button" id="prev-4" class="btn btn-secondary">Anterior</button>
+                        <button type="button" id="next-4" class="btn btn-primary">Revisar</button>
                     </div>
                 </div>
 
-                <div id="step-5" class="form-step" style="display: none;">
-                    <h2>Paso 5 de 5: Revisa y confirma tu cita</h2>
+                <!-- Step 5: Summary -->
+                <div id="step-5" class="form-step">
+                    <div class="summary-header">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Confirma los detalles</h3>
+                    </div>
                     <div id="resumen-container" class="booking-summary">
+                        <!-- JS injects summary here -->
                     </div>
                     <div class="form-navigation">
-                        <button type="button" id="prev-5" class="btn">Anterior</button>
-                        <button type="submit" id="submitBtn" class="btn">Agendar Cita</button>
+                        <button type="button" id="prev-5" class="btn btn-secondary">Anterior</button>
+                        <button type="submit" id="submitBtn" class="btn btn-success">Confirmar Reserva</button>
                     </div>
                 </div>
 
@@ -271,14 +324,16 @@
         </div>
     </div>
 
-    <!-- Contenedor para el mensaje de carga -->
+    <!-- Loading Overlay -->
     <div id="loading-overlay" class="loading-overlay" style="display: none;">
         <div class="loader"></div>
+        <p>Cargando...</p>
     </div>
+
+    <!-- Scripts -->
     <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
-    <script type="module" src="script.js"></script>
-    
+    <script type="module" src="js/script.js"></script>
 </body>
 
 </html>
